@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  # postgres DB service
+  database:
+    image: postgres:16.1-alpine3.18
+    container_name: shipments-service-database
+    restart: always
+    ports:
+      - ${DB_FORWARD_PORT:-5432}:5432
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-admin}
+      - POSTGRES_DB=${DB_DATABASE:-shipmentss_service_db}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - shipments_service
+
+  #pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: shipments-service-pgadmin
+    restart: always
+    ports:
+      - ${PGADMIN_FORWARD_PORT:-8888}:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - shipments_service
+
+  # Backend service
+  backend:
+    container_name: shipments-service-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    ports:
+      - ${APP_FORWARD_PORT:-8080}:${APP_PORT:-8080}
+    volumes:
+      - .:/app
+    networks:
+      - shipments_service
+    restart: on-failure
+    tty: true
+    stdin_open: true
+    expose:
+      - ${APP_PORT:-8080}
+
+networks:
+  shipments_service:
+    name: shipments-service-shared-network
+    external: true
+
+volumes:
+  pg_data: {}
+  pgadmin_data: {}
+#docker network create shipments-service-shared-network

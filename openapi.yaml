@@ -1,0 +1,345 @@
+openapi: 3.0.0
+info:
+  title: Shipment Management API
+  description: API for managing shipments with stops, arrivals, pickups, and deliveries
+  version: 1.0.0
+
+paths:
+  /shipments:
+    post:
+      summary: Create a new shipment
+      operationId: createShipment
+      tags:
+        - Shipments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateShipmentRequest'
+      responses:
+        '201':
+          description: Shipment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipmentResponse'
+        '400':
+          description: Bad request due to validation errors
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+              example:
+                title: "Bad Request"
+                detail: "Dto Validation"
+                status: 400
+                invalid_params:
+                  - name: "stops"
+                    message: "stops should not be empty"
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /shipments/{shipment_id}/stops/{stop_id}/arrive:
+    patch:
+      summary: Arrive at a stop
+      operationId: arriveAtStop
+      tags:
+        - Shipments
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: stop_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully arrived at stop
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StopResponse'
+              example:
+                message: "Arrived at stop successfully"
+                _links:
+                  arrive-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/arrive"
+                    method: "PATCH"
+                  pickup-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/pickup"
+                    method: "PATCH"
+                  deliver-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/deliver"
+                    method: "PATCH"
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Shipment or stop not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /shipments/{shipment_id}/stops/{stop_id}/pickup:
+    patch:
+      summary: Pickup at a stop
+      operationId: pickupAtStop
+      tags:
+        - Shipments
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: stop_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully picked up at stop
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StopResponse'
+              example:
+                message: "Shipment picked up from stop successfully"
+                _links:
+                  arrive-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/arrive"
+                    method: "PATCH"
+                  pickup-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/pickup"
+                    method: "PATCH"
+                  deliver-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/deliver"
+                    method: "PATCH"
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Shipment or stop not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+  /shipments/{shipment_id}/stops/{stop_id}/deliver:
+    patch:
+      summary: Deliver at a stop
+      operationId: deliverAtStop
+      tags:
+        - Shipments
+      parameters:
+        - name: shipment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: stop_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully delivered at stop
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StopResponse'
+              example:
+                message: "Shipment delivered at stop successfully"
+                _links:
+                  arrive-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/arrive"
+                    method: "PATCH"
+                  pickup-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/pickup"
+                    method: "PATCH"
+                  deliver-at-stop:
+                    href: "/shipments/{shipment_id}/stops/{stop_id}/deliver"
+                    method: "PATCH"
+        '400':
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Shipment or stop not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+
+components:
+  schemas:
+    StopResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        _links:
+          type: object
+          properties:
+            arrive-at-stop:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            pickup-at-stop:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            deliver-at-stop:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+    CreateShipmentRequest:
+      type: object
+      required:
+        - stops
+      properties:
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/StopRequest'
+          minItems: 1
+    StopRequest:
+      type: object
+      required:
+        - sequence
+        - type
+      properties:
+        sequence:
+          type: integer
+          description: Sequence number defining the order of stops
+        type:
+          type: string
+          enum: [PICKUP, DELIVERY]
+          description: Type of stop
+    ShipmentResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Unique identifier for the shipment
+        is_complete:
+          type: boolean
+          description: Whether the shipment is complete
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last updated timestamp
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/StopResponse'
+        _links:
+          type: object
+          properties:
+            create-shipment:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            arrive-at-stop:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            pickup-at-stop:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            deliver-at-stop:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+    ProblemDetails:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Short, human-readable summary of the error
+        detail:
+          type: string
+          description: Detailed description of the error
+        status:
+          type: integer
+          description: HTTP status code
+        invalid_params:
+          type: array
+          description: List of invalid parameters
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the invalid parameter
+              message:
+                type: string
+                description: Validation error message

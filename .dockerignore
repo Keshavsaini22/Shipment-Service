@@ -1,0 +1,33 @@
+# Node modules and build directories
+/node_modules
+/build
+/dist
+/docs
+
+# Environment variables files
+.env.example
+
+# Version control directories and files
+.git
+.gitignore
+.gitattributes
+
+# Docker and Docker Compose files
+docker-compose.*
+Dockerfile
+.dockerignore
+
+# IDE and editor files
+.idea/
+.vscode
+
+# Application-specific files
+openapi.yaml
+/static/programs.json
+.eslintrc.js
+.prettierrc
+releases
+asyncapi.yaml
+
+# Documentation and markdown files
+README.md

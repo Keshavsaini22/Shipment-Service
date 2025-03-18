@@ -1,0 +1,175 @@
+asyncapi: 2.6.0
+info:
+  title: Shipments Service
+  version: "1.0"
+  description: Manages shipment events, including arrivals, departures, pickups, and completion notifications.
+  contact:
+    name: Shipments Service
+    email: reporteria.universitaria@funiber.org
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+channels:
+  shipments-service.arrived_at_stop:
+    publish:
+      summary: Notify when a shipment arrives at a stop.
+      operationId: ShipmentArrived
+      message:
+        $ref: "#/components/messages/ShipmentArrivalRequest"
+
+  shipments-service.delivered_at_stop:
+    publish:
+      summary: Notify when a shipment departs from a stop.
+      operationId: ShipmentDeparted
+      message:
+        $ref: "#/components/messages/ShipmentDeliveredRequest"
+
+  shipments-service.picked_up_from_stop:
+    publish:
+      summary: Notify when a shipment is successfully picked up.
+      operationId: ShipmentPickedUp
+      message:
+        $ref: "#/components/messages/ShipmentPickedUpRequest"
+
+  shipments-service.shipment_completed:
+    publish:
+      summary: Notify when a shipment is successfully completed.
+      operationId: ShipmentCompleted
+      message:
+        $ref: "#/components/messages/ShipmentCompletedRequest"
+
+components:
+  messages:
+    ShipmentArrivalRequest:
+      name: ShipmentArrivalRequest
+      title: Shipment Arrival Notification
+      contentType: application/json
+      summary: Notifies the system when a shipment arrives at a stop.
+      payload:
+        type: object
+        description: Contains shipment details and stop status upon arrival.
+        properties:
+          uuid:
+            type: string
+            format: uuid
+            description: Unique identifier for the event.
+          fired_at:
+            type: string
+            format: date-time
+            description: Timestamp of the event occurrence.
+          shipment:
+            $ref: "#/components/schemas/ShipmentArrivalRequestPayload"
+
+    ShipmentDeliveredRequest:
+      name: ShipmentDeliveredRequest
+      title: Shipment Departure Notification
+      contentType: application/json
+      summary: Notifies the system when a shipment departs from a stop.
+      payload:
+        type: object
+        description: Contains shipment details and stop status upon departure.
+        properties:
+          uuid:
+            type: string
+            format: uuid
+            description: Unique identifier for the event.
+          fired_at:
+            type: string
+            format: date-time
+            description: Timestamp of the event occurrence.
+          shipment:
+            $ref: "#/components/schemas/ShipmentDeliveredRequestPayload"
+
+    ShipmentPickedUpRequest:
+      name: ShipmentPickedUpRequest
+      title: Shipment Pickup Notification
+      contentType: application/json
+      summary: Notifies the system when a shipment is picked up.
+      payload:
+        type: object
+        description: Contains shipment details upon pickup.
+        properties:
+          uuid:
+            type: string
+            format: uuid
+            description: Unique identifier for the event.
+          fired_at:
+            type: string
+            format: date-time
+            description: Timestamp of the event occurrence.
+          shipment:
+            $ref: "#/components/schemas/ShipmentPickupRequestPayload"
+
+    ShipmentCompletedRequest:
+      name: ShipmentCompletedRequest
+      title: Shipment Completion Notification
+      contentType: application/json
+      summary: Notifies the system when a shipment is successfully completed.
+      payload:
+        type: object
+        description: Contains final shipment details upon completion.
+        properties:
+          uuid:
+            type: string
+            format: uuid
+            description: Unique identifier for the event.
+          fired_at:
+            type: string
+            format: date-time
+            description: Timestamp of the event occurrence.
+          shipment:
+            $ref: "#/components/schemas/ShipmentCompleted"
+
+  schemas:
+    ShipmentArrivalRequestPayload:
+      title: Shipment Arrival Details
+      type: object
+      description: Contains shipment and stop details upon arrival.
+      properties:
+        shipment_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the shipment.
+        stop_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the stop.
+
+    ShipmentDeliveredRequestPayload:
+      title: Shipment Departure Details
+      type: object
+      description: Contains shipment and stop details upon departure.
+      properties:
+        shipment_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the shipment.
+        stop_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the stop.
+
+    ShipmentPickupRequestPayload:
+      title: Shipment Pickup Details
+      type: object
+      description: Contains shipment and stop details upon pickup.
+      properties:
+        shipment_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the shipment.
+        stop_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the stop.
+
+    ShipmentCompleted:
+      title: Shipment Completion Details
+      type: object
+      description: Contains final shipment details upon completion.
+      properties:
+        shipment_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the shipment.
